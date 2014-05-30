@@ -12,18 +12,36 @@ Based on this library, AmbilightParty provides fun, customizable and extensible 
 
 ## Requirements
 
+Python modules :
 * ```requests```
 
 
 ## Get started
+    $
     git clone https://github.com/pascalif/AmbilightParty
-    cd ambi
+    cd AmbilightParty
     pip install -r requirements.txt
     python -m ambi.party --help
 
+
 ## How-to
-There is so far a very limited set of features implemented in the API wrapper.
+
+## Using low-level API wrapper
+
+There is so far a limited set of features implemented in the API wrapper.
+
+```python
+    tv = AmbiTV('192.168.0.59')
+    tv.autoconfigure()
+    tv.set_side(AmbiTV.TOP, 255, 0, 0)
+    tv.set_pixel(AmbiTV.TOP, 2, 0, 255, 0)
+```
+
+## Using animations
+
 The main function is just a demo on top of this library.
 Many more to come !
 
-    python -m ambi.party
+```bash
+    $ python -m ambi.party
+```
