@@ -10,6 +10,7 @@ class AmbiTV(object):
     TOP = 'top'
     RIGHT = 'right'
     BOTTOM = 'bottom'
+    VERSION = 1.0
 
     def __init__(self, ip=None, dryrun=False):
         self.dryrun = dryrun
@@ -84,6 +85,9 @@ class AmbiTV(object):
         #self._debug_request(r)
         return r
 
+    def info(self):
+        return { 'topology': self.get_topology(), 'lib-version': self.VERSION}
+
     def autoconfigure(self):
         js = self.get_topology()
         self.nb_layers = js['layers']
@@ -97,12 +101,15 @@ class AmbiTV(object):
         self.set_mode_manual()
 
     def get_mode(self):
+        # todo dryrun
         self.ws_get('/mode')
 
     def set_mode_internal(self):
+        # todo dryrun
         self.ws_post('/mode', body={'current': 'internal'})
 
     def set_mode_manual(self):
+        # todo dryrun
         self.ws_post('/mode', body={'current': 'manual'})
 
     def get_topology(self):

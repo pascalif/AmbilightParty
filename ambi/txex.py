@@ -69,13 +69,34 @@ class AmbiTVExtended(AmbiTV):
         return all_pixels
 
     def _unserialize_pixels(self, all_pixels):
-        self.pixels[AmbiTV.LEFT] = all_pixels[0:self.sizes[AmbiTV.LEFT]]
-        self.pixels[AmbiTV.TOP] = all_pixels[self.sizes[AmbiTV.LEFT]:self.sizes[AmbiTV.LEFT]+self.sizes[AmbiTV.TOP]]
+        self.pixels[AmbiTV.LEFT] = all_pixels[
+            0:
+            self.sizes[AmbiTV.LEFT]]
+        self.pixels[AmbiTV.TOP] = all_pixels[
+            self.sizes[AmbiTV.LEFT]:
+            self.sizes[AmbiTV.LEFT]+self.sizes[AmbiTV.TOP]]
         self.pixels[AmbiTV.RIGHT] = all_pixels[
             self.sizes[AmbiTV.LEFT]+self.sizes[AmbiTV.TOP]:
             self.sizes[AmbiTV.LEFT]+self.sizes[AmbiTV.TOP]+self.sizes[AmbiTV.RIGHT]]
         self.pixels[AmbiTV.BOTTOM] = all_pixels[
             self.sizes[AmbiTV.LEFT]+self.sizes[AmbiTV.TOP]+self.sizes[AmbiTV.RIGHT]:]
+
+    def _send_pixels(self):
+        self.set_pixels_by_side(
+            left_pixels=self.pixels[AmbiTV.LEFT],
+            top_pixels=self.pixels[AmbiTV.TOP],
+            right_pixels=self.pixels[AmbiTV.RIGHT],
+            bottom_pixels=self.pixels[AmbiTV.BOTTOM])
+
+    def patternize(self, pattern_pixels):
+        all_pixels = self._serialize_pixels()
+        nb_pixels_before = len(all_pixels)
+        for pos in range(0, len(all_pixels), len(pattern_pixels)):
+            all_pixels[pos : pos+len(pattern_pixels)] = pattern_pixels
+        # truncate potentially surnumerous pattern pixels added at the end
+        del all_pixels[nb_pixels_before:]
+        self._unserialize_pixels(all_pixels)
+        self._send_pixels()
 
     # TODO inject_side=AmbiTV.LEFT, inject_position=0
     # TODO loop or drop
@@ -86,13 +107,9 @@ class AmbiTVExtended(AmbiTV):
         for pos in range(len(all_pixels)-1, 0, -1):
             all_pixels[pos] = all_pixels[pos-1]
         all_pixels[0] = new_pixel
-        self._unserialize_pixels(all_pixels)
 
-        self.set_pixels_by_side(
-            left_pixels=self.pixels[AmbiTV.LEFT],
-            top_pixels=self.pixels[AmbiTV.TOP],
-            right_pixels=self.pixels[AmbiTV.RIGHT],
-            bottom_pixels=self.pixels[AmbiTV.BOTTOM])
+        self._unserialize_pixels(all_pixels)
+        self._send_pixels()
 
     def rotate(self, direction=Direction.CCW):
         all_pixels = self._serialize_pixels()
@@ -109,14 +126,11 @@ class AmbiTVExtended(AmbiTV):
             all_pixels[len(all_pixels)-1] = initial_first_pixel
 
         self._unserialize_pixels(all_pixels)
-        self.set_pixels_by_side(
-            left_pixels=self.pixels[AmbiTV.LEFT],
-            top_pixels=self.pixels[AmbiTV.TOP],
-            right_pixels=self.pixels[AmbiTV.RIGHT],
-            bottom_pixels=self.pixels[AmbiTV.BOTTOM])
+        self._send_pixels()
 
-    def mirror(self, mirror):
+    def mirror(self, direction):
         # TODO inverse TOP/BOTTOM too
-        if mirror == Direction.VERTICAL
+        if direction == Direction.VERTICAL:
             self.set_pixels_by_side(left_pixels=self.pixels[AmbiTV.RIGHT], right_pixels=self.pixels[AmbiTV.LEFT])
                         # i[b], i[a] = i[a], i[b]
+        # tester both
