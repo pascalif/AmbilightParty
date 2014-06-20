@@ -1,8 +1,7 @@
 __author__ = 'pascal'
 
-from tv import AmbiTV
+from tv import AmbilightTV
 from array import array
-
 
 class Direction():
     CCW = 1
@@ -11,26 +10,32 @@ class Direction():
     HORIZONTAL = 0
 
 
-class AmbiTVExtended(AmbiTV):
+class BufferedAmbilightTV(AmbilightTV):
 
     def __init__(self, ip=None, dryrun=False):
-        super(AmbiTVExtended, self).__init__(ip, dryrun)
-        self.set_listener(self)
-        self.pixels = {AmbiTV.LEFT: [], AmbiTV.TOP: [], AmbiTV.RIGHT: [], AmbiTV.BOTTOM: []}
+        super(BufferedAmbilightTV, self).__init__(ip, dryrun)
+        self.register_observer(self)
+
+        # Each pixel will be a (r, g, b) tuple
+        self.pixels = {AmbilightTV.LEFT: [], AmbilightTV.TOP: [], AmbilightTV.RIGHT: [], AmbilightTV.BOTTOM: []}
         self.nb_pixels = 0
 
-    def autoconfigure(self):
-        super(AmbiTVExtended, self).autoconfigure()
-        for i in range(0, self.sizes[AmbiTV.LEFT]):
-            self.pixels[AmbiTV.LEFT].append((0, 0, 0))
-        for i in range(0, self.sizes[AmbiTV.TOP]):
-            self.pixels[AmbiTV.TOP].append((0, 0, 0))
-        for i in range(0, self.sizes[AmbiTV.RIGHT]):
-            self.pixels[AmbiTV.RIGHT].append((0, 0, 0))
-        for i in range(0, self.sizes[AmbiTV.BOTTOM]):
-            self.pixels[AmbiTV.BOTTOM].append((0, 0, 0))
+    def register_subject(self, subject):
+        pass
 
-    def notified_reset(self, red, green, blue):
+    def autoconfigure(self):
+        super(BufferedAmbilightTV, self).autoconfigure()
+
+        for i in range(0, self.sizes[AmbilightTV.LEFT]):
+            self.pixels[AmbilightTV.LEFT].append((0, 0, 0))
+        for i in range(0, self.sizes[AmbilightTV.TOP]):
+            self.pixels[AmbilightTV.TOP].append((0, 0, 0))
+        for i in range(0, self.sizes[AmbilightTV.RIGHT]):
+            self.pixels[AmbilightTV.RIGHT].append((0, 0, 0))
+        for i in range(0, self.sizes[AmbilightTV.BOTTOM]):
+            self.pixels[AmbilightTV.BOTTOM].append((0, 0, 0))
+
+    def on_all_pixels_changed(self, red, green, blue):
         #print "notify_resetted :"+str(red)+str(green)+str(blue)
         for side in self.pixels.keys():
             for i in range(0, self.sizes[side]):
@@ -47,10 +52,10 @@ class AmbiTVExtended(AmbiTV):
 
     def on_pixels_by_side_changed(self, left_pixels, top_pixels, right_pixels, bottom_pixels, layer):
         #print "on_pixels_by_side_changed "
-        self._on_pixels_by_side_changed(side=AmbiTV.LEFT, pixels=left_pixels, layer=layer)
-        self._on_pixels_by_side_changed(side=AmbiTV.TOP, pixels=top_pixels, layer=layer)
-        self._on_pixels_by_side_changed(side=AmbiTV.RIGHT, pixels=right_pixels, layer=layer)
-        self._on_pixels_by_side_changed(side=AmbiTV.BOTTOM, pixels=bottom_pixels, layer=layer)
+        self._on_pixels_by_side_changed(side=AmbilightTV.LEFT, pixels=left_pixels, layer=layer)
+        self._on_pixels_by_side_changed(side=AmbilightTV.TOP, pixels=top_pixels, layer=layer)
+        self._on_pixels_by_side_changed(side=AmbilightTV.RIGHT, pixels=right_pixels, layer=layer)
+        self._on_pixels_by_side_changed(side=AmbilightTV.BOTTOM, pixels=bottom_pixels, layer=layer)
 
     def _on_pixels_by_side_changed(self, side, pixels, layer):
         if pixels is None:
@@ -64,29 +69,29 @@ class AmbiTVExtended(AmbiTV):
                 self.pixels[side][pixel_pos] = pixel
 
     def _serialize_pixels(self):
-        all_pixels = self.pixels[AmbiTV.LEFT] + self.pixels[AmbiTV.TOP] + self.pixels[AmbiTV.RIGHT] + \
-                 self.pixels[AmbiTV.BOTTOM]
+        all_pixels = self.pixels[AmbilightTV.LEFT] + self.pixels[AmbilightTV.TOP] + self.pixels[AmbilightTV.RIGHT] + \
+                 self.pixels[AmbilightTV.BOTTOM]
         return all_pixels
 
     def _unserialize_pixels(self, all_pixels):
-        self.pixels[AmbiTV.LEFT] = all_pixels[
+        self.pixels[AmbilightTV.LEFT] = all_pixels[
             0:
-            self.sizes[AmbiTV.LEFT]]
-        self.pixels[AmbiTV.TOP] = all_pixels[
-            self.sizes[AmbiTV.LEFT]:
-            self.sizes[AmbiTV.LEFT]+self.sizes[AmbiTV.TOP]]
-        self.pixels[AmbiTV.RIGHT] = all_pixels[
-            self.sizes[AmbiTV.LEFT]+self.sizes[AmbiTV.TOP]:
-            self.sizes[AmbiTV.LEFT]+self.sizes[AmbiTV.TOP]+self.sizes[AmbiTV.RIGHT]]
-        self.pixels[AmbiTV.BOTTOM] = all_pixels[
-            self.sizes[AmbiTV.LEFT]+self.sizes[AmbiTV.TOP]+self.sizes[AmbiTV.RIGHT]:]
+            self.sizes[AmbilightTV.LEFT]]
+        self.pixels[AmbilightTV.TOP] = all_pixels[
+            self.sizes[AmbilightTV.LEFT]:
+            self.sizes[AmbilightTV.LEFT]+self.sizes[AmbilightTV.TOP]]
+        self.pixels[AmbilightTV.RIGHT] = all_pixels[
+            self.sizes[AmbilightTV.LEFT]+self.sizes[AmbilightTV.TOP]:
+            self.sizes[AmbilightTV.LEFT]+self.sizes[AmbilightTV.TOP]+self.sizes[AmbilightTV.RIGHT]]
+        self.pixels[AmbilightTV.BOTTOM] = all_pixels[
+            self.sizes[AmbilightTV.LEFT]+self.sizes[AmbilightTV.TOP]+self.sizes[AmbilightTV.RIGHT]:]
 
     def _send_pixels(self):
         self.set_pixels_by_side(
-            left_pixels=self.pixels[AmbiTV.LEFT],
-            top_pixels=self.pixels[AmbiTV.TOP],
-            right_pixels=self.pixels[AmbiTV.RIGHT],
-            bottom_pixels=self.pixels[AmbiTV.BOTTOM])
+            left_pixels=self.pixels[AmbilightTV.LEFT],
+            top_pixels=self.pixels[AmbilightTV.TOP],
+            right_pixels=self.pixels[AmbilightTV.RIGHT],
+            bottom_pixels=self.pixels[AmbilightTV.BOTTOM])
 
     def patternize(self, pattern_pixels):
         all_pixels = self._serialize_pixels()
@@ -131,6 +136,6 @@ class AmbiTVExtended(AmbiTV):
     def mirror(self, direction):
         # TODO inverse TOP/BOTTOM too
         if direction == Direction.VERTICAL:
-            self.set_pixels_by_side(left_pixels=self.pixels[AmbiTV.RIGHT], right_pixels=self.pixels[AmbiTV.LEFT])
+            self.set_pixels_by_side(left_pixels=self.pixels[AmbilightTV.RIGHT], right_pixels=self.pixels[AmbilightTV.LEFT])
                         # i[b], i[a] = i[a], i[b]
         # tester both
