@@ -35,6 +35,9 @@ class BufferedAmbilightTV(AmbilightTV):
         for i in range(0, self.sizes[AmbilightTV.BOTTOM]):
             self.pixels[AmbilightTV.BOTTOM].append((0, 0, 0))
 
+    def load_current_pixels(self):
+        raise Exception('TODO Not implemented function load_current_pixels')
+
     def on_all_pixels_changed(self, red, green, blue):
         #print "notify_resetted :"+str(red)+str(green)+str(blue)
         for side in self.pixels.keys():
@@ -103,8 +106,6 @@ class BufferedAmbilightTV(AmbilightTV):
         self._unserialize_pixels(all_pixels)
         self._send_pixels()
 
-    # TODO inject_side=AmbiTV.LEFT, inject_position=0
-    # TODO loop or drop
     def push_clockwise(self, red=None, green=None, blue=None, color=None):
         new_pixel = self._read_color_as_tuple(red, green, blue, color)
         all_pixels = self._serialize_pixels()
@@ -134,8 +135,9 @@ class BufferedAmbilightTV(AmbilightTV):
         self._send_pixels()
 
     def mirror(self, direction):
-        # TODO inverse TOP/BOTTOM too
-        if direction == Direction.VERTICAL:
-            self.set_pixels_by_side(left_pixels=self.pixels[AmbilightTV.RIGHT], right_pixels=self.pixels[AmbilightTV.LEFT])
-                        # i[b], i[a] = i[a], i[b]
-        # tester both
+        if direction == Direction.HORIZONTAL:
+            self.set_pixels_by_side(left_pixels=self.pixels[AmbilightTV.RIGHT],
+                                    right_pixels=self.pixels[AmbilightTV.LEFT])
+        else:
+            self.set_pixels_by_side(top_pixels=self.pixels[AmbilightTV.BOTTOM],
+                                    bottom_pixels=self.pixels[AmbilightTV.TOP])

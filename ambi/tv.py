@@ -123,7 +123,6 @@ class AmbilightTV(object):
         return r
 
     def ws_post(self, endpath, qs=None, body=None):
-        #print body
         url = self._build_url(endpath)
 
         if self.dryrun:
@@ -149,17 +148,12 @@ class AmbilightTV(object):
         self.set_mode_manual()
 
     def get_mode(self):
-        # todo dryrun
         self.ws_get('/mode')
 
     def set_mode_internal(self):
-        if self.dryrun:
-            return
         self.ws_post('/mode', body={'current': 'internal'})
 
     def set_mode_manual(self):
-        if self.dryrun:
-            return
         self.ws_post('/mode', body={'current': 'manual'})
 
     def get_topology(self):
@@ -173,9 +167,11 @@ class AmbilightTV(object):
             raise Exception('Bad side value ['+str(side)+']')
         if layer is not None and (layer < 0 or layer > self.nb_layers):
             raise Exception('Bad layer value ['+str(layer)+']')
-        if position is not None and (position < 0):
-            #TODO check by side
-            raise Exception('Bad layer value ['+str(position)+']')
+        if position is not None:
+            if side is None:
+                raise Exception('side parameter must be specified when position is used')
+            if self.sizes[side] < position or position < 0:
+                raise Exception('Bad position value [%s] for side [%s]' % (position, side))
 
     def set_color(self, red=None, green=None, blue=None):
         body = {}
@@ -207,30 +203,11 @@ class AmbilightTV(object):
     def set_blue(self):
         self.set_color(red=0, green=0, blue=255)
 
-    def _read_color(self, red=None, green=None, blue=None, color=None):
-        if color is not None:
-            return {'r': color[0], 'g': color[1], 'b': color[2]}
-
-        struct = {}
-        if red is not None:
-            struct['r'] = red
-        if green is not None:
-            struct['g'] = green
-        if blue is not None:
-            struct['b'] = blue
-        return struct
-
-    def _read_color_as_tuple(self, red=None, green=None, blue=None, color=None):
-        if color is not None:
-            return color[0], color[1], color[2]
-        else:
-            return red, green, blue
-
     def set_side(self, side, red=None, green=None, blue=None, color=None, layer=1):
         self.check_parameters(side=side, layer=layer)
         layer_key = 'layer'+str(layer)
         body = {layer_key: {}}
-        body[layer_key][side] = self._read_color(red=red, green=green, blue=blue, color=color)
+        body[layer_key][side] = self._generate_api_pixel(red, green, blue, color)
 
         self.ws_post('/cached', body=body)
 
@@ -242,23 +219,13 @@ class AmbilightTV(object):
         layer_key = 'layer'+str(layer)
         body = {layer_key: {}}
         body[layer_key][side] = {}
-        body[layer_key][side][position] = {}
-
-        if color is not None:
-            body[layer_key][side][position] = {'r': color[0], 'g': color[1], 'b': color[2]}
-        else:
-            if red is not None:
-                body[layer_key][side][position]['r'] = red
-            if green is not None:
-                body[layer_key][side][position]['g'] = green
-            if blue is not None:
-                body[layer_key][side][position]['b'] = blue
+        body[layer_key][side][position] = self._generate_api_pixel(red, green, blue, color)
 
         self.ws_post('/cached', body=body)
 
         for observer in self._observer_list:
             observer.on_single_pixel_changed(side=side, position=position,
-                                                  red=red, green=green, blue=blue, layer=layer)
+                                             red=red, green=green, blue=blue, layer=layer)
 
     def set_pixels_by_side(self, left_pixels=None, top_pixels=None, right_pixels=None, bottom_pixels=None, layer=1):
         left_pixels = copy.deepcopy(left_pixels)
@@ -279,17 +246,31 @@ class AmbilightTV(object):
             observer.on_pixels_by_side_changed(left_pixels=left_pixels, top_pixels=top_pixels,
                                                right_pixels=right_pixels, bottom_pixels=bottom_pixels, layer=layer)
 
+    @staticmethod
+    def _generate_api_pixel(red=None, green=None, blue=None, color=None):
+        if color is not None:
+            return {'r': color[0], 'g': color[1], 'b': color[2]}
 
-    def _inject_pixels_for_side(self, json_layer, side, pixels):
+        pixel = {}
+        if red is not None:
+            pixel['r'] = red
+        if green is not None:
+            pixel['g'] = green
+        if blue is not None:
+            pixel['b'] = blue
+        return pixel
+
+    @staticmethod
+    def _inject_pixels_for_side(dict_for_layer, side, pixels):
         if pixels is None:
             return
 
-        json_layer[side] = {}
+        dict_for_layer[side] = {}
         if type(pixels) is list:
             for i in range(0, len(pixels)):
-                json_layer[side][str(i)] = {'r': pixels[i][0], 'g': pixels[i][1], 'b': pixels[i][2]}
+                dict_for_layer[side][str(i)] = {'r': pixels[i][0], 'g': pixels[i][1], 'b': pixels[i][2]}
         elif type(pixels) is dict:
             for pos, pixel in pixels:
-                json_layer[side][pos] = {'r': pixel[0], 'g': pixel[1], 'b': pixel[2]}
+                dict_for_layer[side][pos] = {'r': pixel[0], 'g': pixel[1], 'b': pixel[2]}
         else:
             raise Exception('Unexpected type for pixels container')

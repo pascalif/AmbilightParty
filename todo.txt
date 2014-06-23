@@ -1,0 +1,8 @@
+# todo effect sunset
+
+# todo : conf file for ip with override on CLI
+et mieux gerer l'ip pour le cas du info
+
+    # todo faire des subparsers ?
+
+# dico colors
