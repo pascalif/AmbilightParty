@@ -181,8 +181,10 @@ def main():
                         help='Set a single color on all pixels. Format : RRGGBB, eg FF8800')
     parser.add_argument('--caterpillar', action='store', required=False,
                         help='Name of the caterpillar to play')
+    parser.add_argument('--direction', action='store', required=False, default='ccw',
+                        help='Direction of caterpillar', choices=['cw', 'ccw'])
     parser.add_argument('--duration', action='store', required=False, default=None,
-                        help='Duration of animation. None for forever')
+                    help='Duration of animation. None for forever')
     parser.add_argument('--speed', action='store', required=False, default=1000,
                         help='Animation speed in milliseconds')
 
@@ -209,7 +211,9 @@ def main():
             party.demo_basic()
 
     elif args.caterpillar:
-        party.play_caterpillar(caterpillar_name=args.caterpillar, duration=args.duration, speed=speed_seconds)
+        direction = Direction.CW if args.direction == 'cw' else Direction.CCW
+        party.play_caterpillar(caterpillar_name=args.caterpillar, duration=args.duration, speed=speed_seconds,
+                               direction=direction)
 
 
 if __name__ == '__main__':
