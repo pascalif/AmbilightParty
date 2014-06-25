@@ -138,6 +138,15 @@ class AmbilightParty():
 
         print('End of basic demo :)')
 
+    def demo_k2000(self, speed=0.1, nb_pixels=1):
+        self.tv.set_color(0, 0, 0)
+        for i in range(0, nb_pixels):
+            self.tv.set_pixel(AmbilightTV.TOP, i, 255, 0, 0)
+
+        for i in range(0,20000):
+            self.rotate_auto(direction=Direction.CCW, moves=self.tv.sizes[AmbilightTV.TOP]-nb_pixels, speed=speed)
+            self.rotate_auto(direction=Direction.CW, moves=self.tv.sizes[AmbilightTV.TOP]-nb_pixels, speed=speed)
+
     def demo_caterpillars(self):
         themes = self.get_caterpillars()
         remaining_names = themes.keys()
@@ -166,7 +175,7 @@ def main():
                         help='Restore the TV in automatic Ambilight management mode')
 
     parser.add_argument('--demo', action='store', required=False, default=None,
-                        help='Play a demo mode', choices=['basic', 'caterpillars'])
+                        help='Play a demo mode', choices=['basic', 'caterpillars', 'k2000'])
 
     parser.add_argument('--color', action='store', required=False, default=None,
                         help='Set a single color on all pixels. Format : RRGGBB, eg FF8800')
@@ -179,6 +188,7 @@ def main():
 
     args = parser.parse_args()
     party = AmbilightParty(args.ip)
+    speed_seconds = float(args.speed)/1000
 
     if args.list:
         party.show_themes_list()
@@ -193,11 +203,13 @@ def main():
     elif args.demo is not None:
         if args.demo == 'caterpillars':
             party.demo_caterpillars()
+        elif args.demo == 'k2000':
+            party.demo_k2000(speed=speed_seconds, nb_pixels=1)
         else:
             party.demo_basic()
 
     elif args.caterpillar:
-        party.play_caterpillar(caterpillar_name=args.caterpillar, duration=args.duration, speed=float(args.speed)/1000)
+        party.play_caterpillar(caterpillar_name=args.caterpillar, duration=args.duration, speed=speed_seconds)
 
 
 if __name__ == '__main__':
