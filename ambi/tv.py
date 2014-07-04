@@ -1,6 +1,5 @@
 import sys
 import json
-from tarfile import _ringbuffer
 import requests
 import os
 import copy
@@ -134,6 +133,12 @@ class AmbilightTV(object):
 
     def info(self):
         return {'topology': self.get_topology(), 'lib-version': self.VERSION}
+
+    def has_top(self):
+        return self.sizes[AmbilightTV.TOP] != 0
+
+    def has_bottom(self):
+        return self.sizes[AmbilightTV.BOTTOM] != 0
 
     def autoconfigure(self):
         js = self.get_topology()

@@ -16,6 +16,7 @@ class AmbilightParty():
         self.tv = BufferedAmbilightTV(ip=ip, dryrun=False)
         self.tv.autoconfigure()
         self.builtin_caterpillars = None
+        self._flags = None
 
     def rotate_auto(self, moves=None, duration=None, speed=1.0, direction=Direction.CCW):
         """ Rotate pixel several time, by duration or by moves number.
@@ -50,7 +51,7 @@ class AmbilightParty():
                 return
 
     def load_builtin_caterpillars(self):
-        builtin_filename = 'themes.json'
+        builtin_filename = 'caterpillars.json'
         try:
             with open(builtin_filename) as fp:
                 js = json.load(fp)
@@ -58,16 +59,33 @@ class AmbilightParty():
         except IOError:
             raise Exception('Built-in caterpillars file [%s] not found' % builtin_filename)
 
+    def load_builtin_flags(self):
+        builtin_filename = 'flags.json'
+        try:
+            with open(builtin_filename) as fp:
+                js = json.load(fp)
+                return js
+        except IOError:
+            raise Exception('Built-in flags file [%s] not found' % builtin_filename)
+
     def get_caterpillars(self):
         if self.builtin_caterpillars is None:
             self.builtin_caterpillars = self.load_builtin_caterpillars()
         return self.builtin_caterpillars
 
+    def get_flags(self):
+        if self._flags is None:
+            self._flags = self.load_builtin_flags()
+        return self._flags
+
     def show_themes_list(self):
         print('Available themes :')
-        print('  * Caterpillars :')
+        print('    * Caterpillars :')
         for caterpillar_name in sorted(self.get_caterpillars().keys()):
-            print('    - %s' % caterpillar_name)
+            print('        - %s' % caterpillar_name)
+        print('    * Flags :')
+        for flag_name in sorted(self.get_flags().keys()):
+            print('        - %s' % flag_name)
 
     def play_caterpillar(self, pattern_pixels=None, caterpillar_name=None, duration=0, speed=0.1, direction=Direction.CCW):
         if caterpillar_name is not None:
@@ -78,6 +96,42 @@ class AmbilightParty():
 
         self.tv.patternize(pattern_pixels)
         self.rotate_auto(duration=duration, speed=speed, direction=direction)
+
+    def play_flag(self, flag_name=None, duration=0):
+        flags = self.get_flags()
+        if flag_name not in flags:
+            raise Exception('Invalid flag name [{:s}]'.format(flag_name))
+        flag_conf = flags[flag_name]
+        print flag_conf
+        flag_type = flag_conf['type']
+        colors = flag_conf['colors']
+
+        if flag_type ==  '3V':
+            self.tv.set_side(AmbilightTV.LEFT, color=colors[0])
+            self.tv.set_side(AmbilightTV.TOP, color=colors[1])
+            self.tv.set_side(AmbilightTV.RIGHT, color=colors[2])
+            if self.tv.has_bottom():
+                self.tv.set_side(AmbilightTV.BOTTOM, color=colors[1])
+
+        elif flag_type ==  '3H':
+            self.tv.set_side(AmbilightTV.TOP, color=colors[0])
+
+            if self.tv.has_bottom():
+                self.tv.set_side(AmbilightTV.LEFT, color=colors[1])
+                self.tv.set_side(AmbilightTV.RIGHT, color=colors[1])
+                self.tv.set_side(AmbilightTV.BOTTOM, color=colors[2])
+            else:
+                side_size = self.tv.sizes[AmbilightTV.LEFT]
+                for i in range (0, side_size/2):
+                    self.tv.set_pixel(AmbilightTV.LEFT, i, color=colors[1])
+                    self.tv.set_pixel(AmbilightTV.RIGHT, i+side_size/2, color=colors[1])
+                for i in range (side_size/2, side_size):
+                    self.tv.set_pixel(AmbilightTV.LEFT, i, color=colors[2])
+                    self.tv.set_pixel(AmbilightTV.RIGHT, i-side_size/2, color=colors[2])
+
+        else:
+            raise Exception('Invalid flag type [{:s}]'.format(flag_type))
+        # todo duration
 
     def demo_basic(self):
         print('Color everywhere...')
@@ -114,7 +168,7 @@ class AmbilightParty():
         for i in range(0, 6):
             self.tv.mirror(Direction.HORIZONTAL)
             time.sleep(0.7)
-        if self.tv.sizes[AmbilightTV.BOTTOM] != 0:
+        if self.tv.has_bottom():
             for i in range(0, 6):
                 self.tv.mirror(Direction.VERTICAL)
                 time.sleep(0.7)
@@ -167,7 +221,7 @@ def main():
     parser.add_argument('--info', action='store_true', required=False, default=None,
                         help='Display TV and library info')
     parser.add_argument('--list', action='store_true', required=False, default=None,
-                        help='List available themes')
+                        help='List available caterpillars and flags')
 
     parser.add_argument('--ip', action='store', required=False, default='192.168.0.59',
                         help='TV ip address')
@@ -183,6 +237,9 @@ def main():
                         help='Name of the caterpillar to play')
     parser.add_argument('--direction', action='store', required=False, default='ccw',
                         help='Direction of caterpillar', choices=['cw', 'ccw'])
+    parser.add_argument('--flag', action='store', required=False,
+                    help='Name of the flag to display')
+
     parser.add_argument('--duration', action='store', required=False, default=None,
                     help='Duration of animation. None for forever')
     parser.add_argument('--speed', action='store', required=False, default=1000,
@@ -214,7 +271,8 @@ def main():
         direction = Direction.CW if args.direction == 'cw' else Direction.CCW
         party.play_caterpillar(caterpillar_name=args.caterpillar, duration=args.duration, speed=speed_seconds,
                                direction=direction)
-
+    elif args.flag:
+        party.play_flag(flag_name=args.flag, duration=args.duration)
 
 if __name__ == '__main__':
     try:

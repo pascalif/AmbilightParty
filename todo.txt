@@ -6,3 +6,5 @@ et mieux gerer l'ip pour le cas du info
     # todo faire des subparsers ?
 
 # dico colors
+
+# ne pas passer en mode auto sur un --list
