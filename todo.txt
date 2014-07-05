@@ -8,3 +8,9 @@ et mieux gerer l'ip pour le cas du info
 # dico colors
 
 # ne pas passer en mode auto sur un --list
+
+
+caterpillar : do not repeat, black sur le reste
+
+flag 3H : gerer cas 2 rows
+flag 3V : interdir si 2 row

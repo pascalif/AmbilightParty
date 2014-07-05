@@ -192,7 +192,7 @@ class AmbilightParty():
 
         print('End of basic demo :)')
 
-    def demo_k2000(self, speed=0.1, nb_pixels=1):
+    def demo_kitt(self, speed=0.1, nb_pixels=1):
         self.tv.set_color(0, 0, 0)
         for i in range(0, nb_pixels):
             self.tv.set_pixel(AmbilightTV.TOP, i, 255, 0, 0)
@@ -229,7 +229,7 @@ def main():
                         help='Restore the TV in automatic Ambilight management mode')
 
     parser.add_argument('--demo', action='store', required=False, default=None,
-                        help='Play a demo mode', choices=['basic', 'caterpillars', 'k2000'])
+                        help='Play a demo mode', choices=['basic', 'caterpillars', 'kitt'])
 
     parser.add_argument('--color', action='store', required=False, default=None,
                         help='Set a single color on all pixels. Format : RRGGBB, eg FF8800')
@@ -262,8 +262,8 @@ def main():
     elif args.demo is not None:
         if args.demo == 'caterpillars':
             party.demo_caterpillars()
-        elif args.demo == 'k2000':
-            party.demo_k2000(speed=speed_seconds, nb_pixels=1)
+        elif args.demo == 'kitt':
+            party.demo_kitt(speed=speed_seconds, nb_pixels=1)
         else:
             party.demo_basic()
 
