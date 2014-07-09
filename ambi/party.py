@@ -130,16 +130,23 @@ class AmbilightParty():
         else:
             raise Exception('Invalid flag type [{:s}]'.format(flag_type))
 
+    def play_flickering_flag(self, flag_name, duration_flag=1, duration_black=0.6, nb_display=10):
+        for i in range(0, nb_display):
+            self.play_flag(flag_name)
+            time.sleep(duration_flag)
+            self.tv.set_black()
+            time.sleep(duration_black)
+
     def demo_basic(self):
         print('Color everywhere...')
         self.tv.set_color(255, 255, 255)
-        time.sleep(1.5)
+        time.sleep(1)
         self.tv.set_color(0, 0, 0)
-        time.sleep(1.5)
+        time.sleep(1)
         self.tv.set_color(255, 255, 0)
-        time.sleep(1.5)
-        self.tv.set_color(64, 192, 255)
-        time.sleep(1.5)
+        time.sleep(1)
+        self.tv.set_color(64, 128, 255)
+        time.sleep(1)
         self.tv.set_color(255, 0, 0)
         time.sleep(1.5)
 
@@ -246,6 +253,8 @@ def main():
                         help='Direction of caterpillar', choices=['cw', 'ccw'])
     parser.add_argument('--flag', action='store', required=False,
                     help='Name of the flag to display')
+    parser.add_argument('--flag-flicker', action='store', required=False, default=0,
+                        help='Number of flag flickering cycles. 0 to disabled the effect.')
 
     parser.add_argument('--duration', action='store', required=False, default=None,
                     help='Duration of animation. None for forever')
@@ -281,7 +290,10 @@ def main():
         party.play_caterpillar(caterpillar_name=args.caterpillar, duration=args.duration, speed=speed_seconds,
                                direction=direction)
     elif args.flag:
-        party.play_flag(flag_name=args.flag)
+        if args.flag_flicker:
+            party.play_flickering_flag(flag_name=args.flag, nb_display=int(args.flag_flicker))
+        else:
+            party.play_flag(flag_name=args.flag)
 
 if __name__ == '__main__':
     try:

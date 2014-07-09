@@ -75,12 +75,14 @@ From CLI, you can :
 
 ### Flags
 
-Just project statically your favorite flag on the wall.
+Thanks to `--flag`, you can project statically your favorite flag on the wall.
+You can also make it blink when your team has scored a goal by adding the `--flag-flicker` argument!
 
-Flags are described in JSON file `flags.json`. So far, only two types of flags are taken into account by the code : those with 3 stripes either horizontally or vertically.
+Flags are described in JSON file `flags.json`.
+So far, only two types of flags are taken into account by the code : those with 3 stripes either horizontally or vertically.
 
 If your TV has only 2 sides equipped with LED, the vertical flag is not possible.
-The horizontal flag will display differently wether you have 2, 3 or 4 LED sides.
+The horizontal flag will display differently whether you have 2, 3 or 4 LED sides.
 
 
 ## Using Python library
@@ -113,4 +115,5 @@ The AmbilightTV class offers a listener/observer mecanism to notify any object o
 
 ## Contribute
 
-So many things could be improved and added such as powerful animations with sub-pixels changes, sun raising simulation, waves effect... Fork & play !
+So many things could be improved and added such as powerful animations with sub-pixels changes,
+sun raising simulation, waves effect, more complex flags... Fork & play !
