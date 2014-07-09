@@ -97,41 +97,38 @@ class AmbilightParty():
         self.tv.patternize(pattern_pixels)
         self.rotate_auto(duration=duration, speed=speed, direction=direction)
 
-    def play_flag(self, flag_name=None, duration=0):
+    def play_flag(self, flag_name=None):
         flags = self.get_flags()
         if flag_name not in flags:
             raise Exception('Invalid flag name [{:s}]'.format(flag_name))
         flag_conf = flags[flag_name]
-        print flag_conf
         flag_type = flag_conf['type']
         colors = flag_conf['colors']
 
-        if flag_type ==  '3V':
-            self.tv.set_side(AmbilightTV.LEFT, color=colors[0])
-            self.tv.set_side(AmbilightTV.TOP, color=colors[1])
-            self.tv.set_side(AmbilightTV.RIGHT, color=colors[2])
-            if self.tv.has_bottom():
-                self.tv.set_side(AmbilightTV.BOTTOM, color=colors[1])
+        if flag_type == '3V':
+            self.tv.set_sides(left_color=colors[0],
+                              right_color=colors[2],
+                              top_color=colors[1],
+                              bottom_color=colors[1])
 
-        elif flag_type ==  '3H':
-            self.tv.set_side(AmbilightTV.TOP, color=colors[0])
-
+        elif flag_type == '3H':
             if self.tv.has_bottom():
-                self.tv.set_side(AmbilightTV.LEFT, color=colors[1])
-                self.tv.set_side(AmbilightTV.RIGHT, color=colors[1])
-                self.tv.set_side(AmbilightTV.BOTTOM, color=colors[2])
+                self.tv.set_sides(top_color=colors[0],
+                                  left_color=colors[1],
+                                  right_color=colors[1],
+                                  bottom_color=colors[2])
             else:
+                self.tv.set_side(AmbilightTV.TOP, color=colors[0])
                 side_size = self.tv.sizes[AmbilightTV.LEFT]
                 for i in range (0, side_size/2):
-                    self.tv.set_pixel(AmbilightTV.LEFT, i, color=colors[1])
-                    self.tv.set_pixel(AmbilightTV.RIGHT, i+side_size/2, color=colors[1])
-                for i in range (side_size/2, side_size):
                     self.tv.set_pixel(AmbilightTV.LEFT, i, color=colors[2])
-                    self.tv.set_pixel(AmbilightTV.RIGHT, i-side_size/2, color=colors[2])
+                    self.tv.set_pixel(AmbilightTV.RIGHT, i+side_size/2, color=colors[2])
+                for i in range (side_size/2, side_size):
+                    self.tv.set_pixel(AmbilightTV.LEFT, i, color=colors[1])
+                    self.tv.set_pixel(AmbilightTV.RIGHT, i-side_size/2, color=colors[1])
 
         else:
             raise Exception('Invalid flag type [{:s}]'.format(flag_type))
-        # todo duration
 
     def demo_basic(self):
         print('Color everywhere...')
@@ -160,7 +157,6 @@ class AmbilightParty():
         self.tv.set_pixel(AmbilightTV.TOP, 3, 128, 0, 255)
         self.tv.set_pixel(AmbilightTV.TOP, 4, 128, 0, 255)
         self.tv.set_pixel(AmbilightTV.TOP, 5, 128, 0, 255)
-
         self.tv.set_pixel(AmbilightTV.RIGHT, 2, 255, 0, 0)
         self.tv.set_pixel(AmbilightTV.RIGHT, 3, 255, 0, 0)
 
@@ -213,6 +209,17 @@ class AmbilightParty():
             print('Playing caterpillar [%s]' % caterpillar_name)
             self.play_caterpillar(caterpillar_name=caterpillar_name, direction=direction, duration=6, speed=speed)
 
+    def demo_flags(self):
+        flags = self.get_flags()
+        remaining_names = flags.keys()
+
+        for i in range(0, 5):
+            flag_name = random.sample(remaining_names, 1)[0]
+            remaining_names.remove(flag_name)
+            print('Displaying flag [%s]' % flag_name)
+            self.play_flag(flag_name=flag_name)
+            time.sleep(2)
+
 
 def main():
     desc = 'Have fun with your Ambilight TV.'
@@ -229,7 +236,7 @@ def main():
                         help='Restore the TV in automatic Ambilight management mode')
 
     parser.add_argument('--demo', action='store', required=False, default=None,
-                        help='Play a demo mode', choices=['basic', 'caterpillars', 'kitt'])
+                        help='Play a demo mode', choices=['basic', 'caterpillars', 'flags', 'kitt'])
 
     parser.add_argument('--color', action='store', required=False, default=None,
                         help='Set a single color on all pixels. Format : RRGGBB, eg FF8800')
@@ -262,6 +269,8 @@ def main():
     elif args.demo is not None:
         if args.demo == 'caterpillars':
             party.demo_caterpillars()
+        elif args.demo == 'flags':
+            party.demo_flags()
         elif args.demo == 'kitt':
             party.demo_kitt(speed=speed_seconds, nb_pixels=1)
         else:
@@ -272,7 +281,7 @@ def main():
         party.play_caterpillar(caterpillar_name=args.caterpillar, duration=args.duration, speed=speed_seconds,
                                direction=direction)
     elif args.flag:
-        party.play_flag(flag_name=args.flag, duration=args.duration)
+        party.play_flag(flag_name=args.flag)
 
 if __name__ == '__main__':
     try:

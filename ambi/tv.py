@@ -219,6 +219,35 @@ class AmbilightTV(object):
         for observer in self._observer_list:
             observer.on_side_changed(side=side, red=red, green=green, blue=blue, layer=layer)
 
+    def set_sides(self, left_color=None, top_color=None, right_color=None, bottom_color=None, layer=1):
+        self.check_parameters(layer=layer)
+        layer_key = 'layer'+str(layer)
+        body = {layer_key: {}}
+        if left_color:
+            body[layer_key][AmbilightTV.LEFT] = self._generate_api_pixel(color=left_color)
+        if right_color:
+            body[layer_key][AmbilightTV.RIGHT] = self._generate_api_pixel(color=right_color)
+        if top_color:
+            body[layer_key][AmbilightTV.TOP] = self._generate_api_pixel(color=top_color)
+        if bottom_color:
+            body[layer_key][AmbilightTV.BOTTOM] = self._generate_api_pixel(color=bottom_color)
+
+        self.ws_post('/cached', body=body)
+
+        for observer in self._observer_list:
+            if left_color:
+                observer.on_side_changed(side=AmbilightTV.LEFT, red=left_color[0], green=left_color[1],
+                                         blue=left_color[2], layer=layer)
+            if right_color:
+                observer.on_side_changed(side=AmbilightTV.RIGHT, red=right_color[0], green=right_color[1],
+                                         blue=right_color[2], layer=layer)
+            if top_color:
+                observer.on_side_changed(side=AmbilightTV.TOP, red=top_color[0], green=top_color[1],
+                                         blue=top_color[2], layer=layer)
+            if bottom_color:
+                observer.on_side_changed(side=AmbilightTV.BOTTOM, red=bottom_color[0], green=bottom_color[1],
+                                         blue=bottom_color[2], layer=layer)
+
     def set_pixel(self, side, position, red=None, green=None, blue=None, color=None, layer=1):
         self.check_parameters(side=side, layer=layer, position=position)
         layer_key = 'layer'+str(layer)

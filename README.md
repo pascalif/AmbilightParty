@@ -86,7 +86,9 @@ The horizontal flag will display differently wether you have 2, 3 or 4 LED sides
 ## Using Python library
 
 Classes are :
-- AmbilightTV : **low-level wrapper of your TV API**. It allows you to change completely the color of all pixels with `set_color()`, of a given side with `set_side()` or of a given pixel with `set_pixel()`. It can also change all pixels at once with `set_pixels_by_side()` method.
+- AmbilightTV : **low-level wrapper of your TV API**. It allows you to change completely the color of all pixels with `set_color()`,
+  all sides at once (one color per side) with `set_sides()`, a given side with `set_side()` or a given pixel with `set_pixel()`.
+  It can also change all pixels at once (one color per pixel) with `set_pixels_by_side()` method.
 
 Quick example :
 
@@ -94,7 +96,7 @@ Quick example :
     tv = AmbiTV('192.168.0.59')
     tv.autoconfigure()
     tv.set_side(AmbiTV.LEFT, 255, 0, 0)
-    tv.set_pixel(AmbiTV.RIGHT, 2, 0, 0, 255)
+    tv.set_pixel(AmbiTV.RIGHT, 2, 0, 128, 255)
     tv.set_pixel(AmbiTV.RIGHT, 4, color=(0, 255, 0))
 ```
 See code of the built-in _basic_ demo to know more.
