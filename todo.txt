@@ -1,16 +1,11 @@
-# todo effect sunset
 
-# todo : conf file for ip with override on CLI
-et mieux gerer l'ip pour le cas du info
+# conf file for ip with override on CLI
 
-    # todo faire des subparsers ?
+# dictionary of colors for cli and lib mode
 
-# dico colors
+# do not autoconfigure when using --list
 
-# ne pas passer en mode auto sur un --list
+# caterpillar : option to do not repeat pattern , and set black on new pixels
 
-
-caterpillar : do not repeat, black sur le reste
-
-flag 3H : gerer cas 2 rows
-flag 3V : interdir si 2 row
+# flag 3H : manage 2 rows case
+# flag 3V : forbid if 2 rows only
