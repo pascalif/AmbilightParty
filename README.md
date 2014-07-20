@@ -50,6 +50,8 @@ optional arguments:
                         Name of the caterpillar to play
   --direction {cw,ccw}  Direction of caterpillar
   --flag FLAG           Name of the flag to display
+  --flag-flicker FLAG_FLICKER
+                        Number of flag flickering cycles. 0 to disabled the effect.
   --duration DURATION   Duration of animation. None for forever
   --speed SPEED         Animation steps speed in milliseconds
 ```
