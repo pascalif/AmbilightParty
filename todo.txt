@@ -3,9 +3,7 @@
 
 # dictionary of colors for cli and lib mode
 
-# do not autoconfigure when using --list
-
-# caterpillar : option to do not repeat pattern , and set black on new pixels
+# caterpillar : option to do not repeat the pattern but rather set black on new pixels
 
 # flag 3H : manage 2 rows case
 # flag 3V : forbid if 2 rows only

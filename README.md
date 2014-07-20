@@ -9,7 +9,7 @@ This project contains a JointSpace API wrapper to easily communicate with your A
 
 Based on this library, AmbilightParty provides **fun, customizable and extensible animations** to enlight your living-room!
 
-The library is compatible with 2-sides, 3-sides and newer 4-sides Philipps TV equipped with Ambilight system.
+The library is compatible with 2-sides, 3-sides and newer 4-sides Philips TV equipped with Ambilight system.
 
 ## Requirements
 
@@ -18,16 +18,26 @@ Python modules :
 
 
 ## Get started
+
+### Install from the sources
     $
     git clone https://github.com/pascalif/AmbilightParty
     cd AmbilightParty
     pip install -r requirements.txt
 
+### Install from PIP
+    $
+    pip install ambilight
+
 
 ## Using CLI
 
+If you installed the egg, you'll have this alias script installed :
 ```bash
-    $ python -m ambi.party --help
+    $ ambilight-party --help
+
+```bash
+    $ python -m ambilight.party --help
 
 usage: party.py [-h] [--info] [--list] [--ip IP] [--stop]
                 [--demo {basic,caterpillars,k2000}] [--color COLOR]
@@ -97,7 +107,7 @@ Classes are :
 Quick example :
 
 ```python
-    tv = AmbiTV('192.168.0.59')
+    tv = AmbilightTV('192.168.0.59')
     tv.autoconfigure()
     tv.set_side(AmbiTV.LEFT, 255, 0, 0)
     tv.set_pixel(AmbiTV.RIGHT, 2, 0, 128, 255)

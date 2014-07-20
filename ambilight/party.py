@@ -1,22 +1,26 @@
 __author__ = 'pascal'
 
-from ambi.tv import AmbilightTV
-from ambi.txex import BufferedAmbilightTV, Direction
+from ambilight.tv import AmbilightTV
+from ambilight.tvbuff import BufferedAmbilightTV, Direction
 
 import argparse
 import sys
 import time
 import random
 import json
+import os
+import ambilight
 
 
 class AmbilightParty():
 
-    def __init__(self, ip):
-        self.tv = BufferedAmbilightTV(ip=ip, dryrun=False)
-        self.tv.autoconfigure()
-        self.builtin_caterpillars = None
+    def __init__(self, dryrun=False):
+        self.tv = BufferedAmbilightTV(dryrun=dryrun)
+        self._caterpillars = None
         self._flags = None
+
+    def connect(self, ip=None):
+        self.tv.autoconfigure(ip=ip)
 
     def rotate_auto(self, moves=None, duration=None, speed=1.0, direction=Direction.CCW):
         """ Rotate pixel several time, by duration or by moves number.
@@ -51,7 +55,7 @@ class AmbilightParty():
                 return
 
     def load_builtin_caterpillars(self):
-        builtin_filename = 'caterpillars.json'
+        builtin_filename = os.path.join(ambilight.__path__[0], 'data', 'caterpillars.json')
         try:
             with open(builtin_filename) as fp:
                 js = json.load(fp)
@@ -60,7 +64,7 @@ class AmbilightParty():
             raise Exception('Built-in caterpillars file [%s] not found' % builtin_filename)
 
     def load_builtin_flags(self):
-        builtin_filename = 'flags.json'
+        builtin_filename = os.path.join(ambilight.__path__[0], 'data', 'flags.json')
         try:
             with open(builtin_filename) as fp:
                 js = json.load(fp)
@@ -69,9 +73,9 @@ class AmbilightParty():
             raise Exception('Built-in flags file [%s] not found' % builtin_filename)
 
     def get_caterpillars(self):
-        if self.builtin_caterpillars is None:
-            self.builtin_caterpillars = self.load_builtin_caterpillars()
-        return self.builtin_caterpillars
+        if self._caterpillars is None:
+            self._caterpillars = self.load_builtin_caterpillars()
+        return self._caterpillars
 
     def get_flags(self):
         if self._flags is None:
@@ -262,17 +266,23 @@ def main():
                         help='Animation speed in milliseconds')
 
     args = parser.parse_args()
-    party = AmbilightParty(args.ip)
+    party = AmbilightParty()
     speed_seconds = float(args.speed)/1000
 
     if args.list:
         party.show_themes_list()
+        exit()
 
-    elif args.info:
-        print party.tv.info()
+    party.connect(args.ip)
+    if args.info:
+        print(party.tv.info())
+        exit()
     elif args.stop:
         party.tv.set_mode_internal()
-    elif args.color:
+        exit()
+
+    party.tv.set_mode_manual()
+    if args.color:
         party.tv.set_color(int(args.color[0:2], 16), int(args.color[2:4], 16), int(args.color[4:6], 16))
 
     elif args.demo is not None:

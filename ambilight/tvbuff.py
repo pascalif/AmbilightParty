@@ -13,7 +13,7 @@ class Direction():
 class BufferedAmbilightTV(AmbilightTV):
 
     def __init__(self, ip=None, dryrun=False):
-        super(BufferedAmbilightTV, self).__init__(ip, dryrun)
+        super(BufferedAmbilightTV, self).__init__(ip=ip, dryrun=dryrun)
         self.register_observer(self)
 
         # Each pixel will be a (r, g, b) tuple
@@ -23,8 +23,8 @@ class BufferedAmbilightTV(AmbilightTV):
     def register_subject(self, subject):
         pass
 
-    def autoconfigure(self):
-        super(BufferedAmbilightTV, self).autoconfigure()
+    def autoconfigure(self, ip=None):
+        super(BufferedAmbilightTV, self).autoconfigure(ip=ip)
 
         for i in range(0, self.sizes[AmbilightTV.LEFT]):
             self.pixels[AmbilightTV.LEFT].append((0, 0, 0))

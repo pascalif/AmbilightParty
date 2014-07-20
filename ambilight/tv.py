@@ -57,7 +57,6 @@ class AmbilightTV(object):
         self.sizes = {AmbilightTV.LEFT: 0, AmbilightTV.TOP: 0, AmbilightTV.RIGHT: 0, AmbilightTV.BOTTOM: 0}
         self._observer_list = []
 
-
     def set_dryrun(self, dryrun):
         self.dryrun = dryrun
 
@@ -83,24 +82,24 @@ class AmbilightTV(object):
         return url
 
     def _debug_request(self, r):
-        print ''
-        print "***** Request   :"
-        print '--- encoding    : ' + r.encoding
-        print "--- url         : " + r.url
-        print "--- headers     : "
-        print r.request.headers
-        print "--- body        : ??? "
-        print "***** Response  :"
-        print "--- status code : " + str(r.status_code)
-        print "--- headers     : "
-        print r.headers
-        print "--- text        : " + r.content
-        print "--- json        : "
+        print('')
+        print("***** Request   :")
+        print('--- encoding    : ' + r.encoding)
+        print("--- url         : " + r.url)
+        print("--- headers     : ")
+        print(r.request.headers)
+        print("--- body        : ??? ")
+        print("***** Response  :")
+        print("--- status code : " + str(r.status_code))
+        print("--- headers     : ")
+        print(r.headers)
+        print("--- text        : " + r.content)
+        print("--- json        : ")
         try:
-            print r.json()
+            print(r.json())
         except Exception:
             pass
-        print ''
+        print('')
 
     def _build_url(self, endpath):
         url = self._get_base_url()+endpath
@@ -140,7 +139,10 @@ class AmbilightTV(object):
     def has_bottom(self):
         return self.sizes[AmbilightTV.BOTTOM] != 0
 
-    def autoconfigure(self):
+    def autoconfigure(self, ip=None):
+        if ip is not None:
+            self.ip = ip
+
         js = self.get_topology()
         self.nb_layers = js['layers']
         self.sizes[AmbilightTV.LEFT] = js['left']
@@ -149,8 +151,6 @@ class AmbilightTV(object):
         self.sizes[AmbilightTV.BOTTOM] = js['bottom']
         self.nb_pixels = self.sizes[AmbilightTV.LEFT] + self.sizes[AmbilightTV.TOP] + self.sizes[AmbilightTV.RIGHT] + \
             self.sizes[AmbilightTV.BOTTOM]
-
-        self.set_mode_manual()
 
     def get_mode(self):
         self.ws_get('/mode')
