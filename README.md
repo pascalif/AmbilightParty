@@ -27,28 +27,22 @@ Python modules :
 ## Get started
 
 ### Install from the sources
-    $
-    git clone https://github.com/pascalif/AmbilightParty
-    cd AmbilightParty
-    pip install -r requirements.txt
+```bash
+$
+git clone https://github.com/pascalif/AmbilightParty
+cd AmbilightParty
+pip install -r requirements.txt
+```
 
 ### Install from PIP
-    $
-    pip install ambilight
-
+```bash
+$ pip install AmbilightParty
+```
 
 ## Using CLI
 
-If you installed the egg, you'll have this alias script installed :
-
 ```bash
-    $ ambilight-party --help
-```
-
-In both cases, you can :
-
-```bash
-    $ python -m ambilight.party --help
+$ python -m ambilight.party --help
 
 usage: party.py [-h] [--info] [--list] [--ip IP] [--stop]
                 [--demo {basic,caterpillars,k2000}] [--color COLOR]
@@ -76,6 +70,13 @@ optional arguments:
   --duration DURATION   Duration of animation. None for forever
   --speed SPEED         Animation steps speed in milliseconds
 ```
+
+If installed from the egg / PIP, you'll have this alias script installed :
+
+```bash
+$ ambilight-party --help
+```
+
 
 ### Available built-in demos
 - `basic` : a demonstration of calls to low-level API : change all pixels / by side / by pixel / by sub-pixel. Mirror and rotation effects.
@@ -118,21 +119,21 @@ Classes are :
 Quick example :
 
 ```python
-    tv = AmbilightTV()
+tv = AmbilightTV()
 
-    # Retrieve TV topology
-    tv.autoconfigure('192.168.0.59')
-    # Switch off automatic mode
-    tv.set_mode_manual()
+# Retrieve TV topology
+tv.autoconfigure('192.168.0.59')
+# Switch off automatic mode
+tv.set_mode_manual()
 
-    # Change every pixel or just a side
-    tv.set_color(192, 28, 78)
-    tv.set_side(AmbiTV.LEFT, 255, 0, 0)
+# Change every pixel or just a side
+tv.set_color(192, 28, 78)
+tv.set_side(AmbiTV.LEFT, 255, 0, 0)
 
-    # Different ways of changing a pixel or sub-pixel value
-    tv.set_pixel(AmbiTV.RIGHT, 2, 0, 128, 255)
-    tv.set_pixel(AmbiTV.RIGHT, 2, color=(0, 255, 0))
-    tv.set_pixel(AmbiTV.RIGHT, 4, blue=255)
+# Different ways of changing a pixel or sub-pixel value
+tv.set_pixel(AmbiTV.RIGHT, 2, 0, 128, 255)
+tv.set_pixel(AmbiTV.RIGHT, 2, color=(0, 255, 0))
+tv.set_pixel(AmbiTV.RIGHT, 4, blue=255)
 ```
 See code of the built-in _basic_ demo to know more.
 
