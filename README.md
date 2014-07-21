@@ -11,6 +11,10 @@ Based on this library, AmbilightParty provides **fun, customizable and extensibl
 
 The library is compatible with 2-sides, 3-sides and newer 4-sides Philips TV equipped with Ambilight system.
 
+![AmbilightParty demo picture](https://i1.ytimg.com/vi/iKO8UPjvpsg/0.jpg "AmbilightParty demo")
+
+
+
 You can watch a quick demo of some of the built-in effects and animations at **https://www.youtube.com/watch?v=iKO8UPjvpsg**
 
 

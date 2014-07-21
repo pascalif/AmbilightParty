@@ -1,7 +1,6 @@
 __author__ = 'pascal'
 
 from tv import AmbilightTV
-from array import array
 
 class Direction():
     CCW = 1
@@ -73,7 +72,7 @@ class BufferedAmbilightTV(AmbilightTV):
 
     def _serialize_pixels(self):
         all_pixels = self.pixels[AmbilightTV.LEFT] + self.pixels[AmbilightTV.TOP] + self.pixels[AmbilightTV.RIGHT] + \
-                 self.pixels[AmbilightTV.BOTTOM]
+                     self.pixels[AmbilightTV.BOTTOM]
         return all_pixels
 
     def _unserialize_pixels(self, all_pixels):
@@ -100,7 +99,7 @@ class BufferedAmbilightTV(AmbilightTV):
         all_pixels = self._serialize_pixels()
         nb_pixels_before = len(all_pixels)
         for pos in range(0, len(all_pixels), len(pattern_pixels)):
-            all_pixels[pos : pos+len(pattern_pixels)] = pattern_pixels
+            all_pixels[pos: pos+len(pattern_pixels)] = pattern_pixels
         # truncate potentially surnumerous pattern pixels added at the end
         del all_pixels[nb_pixels_before:]
         self._unserialize_pixels(all_pixels)

@@ -1,5 +1,5 @@
 
-# conf file for ip with override on CLI
+# conf file / env variable for IP parameter
 
 # dictionary of colors for cli and lib mode
 

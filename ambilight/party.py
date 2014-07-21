@@ -91,7 +91,10 @@ class AmbilightParty():
         for flag_name in sorted(self.get_flags().keys()):
             print('        - %s' % flag_name)
 
-    def play_caterpillar(self, pattern_pixels=None, caterpillar_name=None, duration=0, speed=0.1, direction=Direction.CCW):
+    def play_caterpillar(self, pattern_pixels=None, caterpillar_name=None,
+                         duration=0,
+                         speed=0.1,
+                         direction=Direction.CCW):
         if caterpillar_name is not None:
             caterpillars = self.get_caterpillars()
             if caterpillar_name not in caterpillars:
@@ -124,10 +127,10 @@ class AmbilightParty():
             else:
                 self.tv.set_side(AmbilightTV.TOP, color=colors[0])
                 side_size = self.tv.sizes[AmbilightTV.LEFT]
-                for i in range (0, side_size/2):
+                for i in range(0, side_size/2):
                     self.tv.set_pixel(AmbilightTV.LEFT, i, color=colors[2])
                     self.tv.set_pixel(AmbilightTV.RIGHT, i+side_size/2, color=colors[2])
-                for i in range (side_size/2, side_size):
+                for i in range(side_size/2, side_size):
                     self.tv.set_pixel(AmbilightTV.LEFT, i, color=colors[1])
                     self.tv.set_pixel(AmbilightTV.RIGHT, i-side_size/2, color=colors[1])
 
@@ -204,7 +207,7 @@ class AmbilightParty():
         for i in range(0, nb_pixels):
             self.tv.set_pixel(AmbilightTV.TOP, i, 255, 0, 0)
 
-        for i in range(0,20000):
+        for i in range(0, 20000):
             self.rotate_auto(direction=Direction.CCW, moves=self.tv.sizes[AmbilightTV.TOP]-nb_pixels, speed=speed)
             self.rotate_auto(direction=Direction.CW, moves=self.tv.sizes[AmbilightTV.TOP]-nb_pixels, speed=speed)
 
@@ -256,12 +259,12 @@ def main():
     parser.add_argument('--direction', action='store', required=False, default='ccw',
                         help='Direction of caterpillar', choices=['cw', 'ccw'])
     parser.add_argument('--flag', action='store', required=False,
-                    help='Name of the flag to display')
+                        help='Name of the flag to display')
     parser.add_argument('--flag-flicker', action='store', required=False, default=0,
                         help='Number of flag flickering cycles. 0 to disabled the effect.')
 
     parser.add_argument('--duration', action='store', required=False, default=None,
-                    help='Duration of animation. None for forever')
+                        help='Duration of animation. None for forever')
     parser.add_argument('--speed', action='store', required=False, default=1000,
                         help='Animation speed in milliseconds')
 
@@ -305,9 +308,10 @@ def main():
         else:
             party.play_flag(flag_name=args.flag)
 
+
 if __name__ == '__main__':
     try:
         main()
     except Exception as e:
-        print "Error:", e
+        print('Error:', e)
         sys.exit(1)
