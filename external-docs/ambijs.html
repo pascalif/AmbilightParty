@@ -1,0 +1,214 @@
+<html>
+<head><TITLE>Test Jointspace with JSON - Ambilight</TITLE>
+<script type="text/javascript" src="http://jscolor.com/jscolor/jscolor.js"></script>
+<script type="text/javascript">
+TESTONLY = false;
+function pressthekey(mykey)
+{
+    var http = new XMLHttpRequest();
+    var JSONObject = new Object;
+    JSONObject.key = mykey;
+    
+    var url = "http://" + p['tvipaddr'].value + ":1925/1/input/key";
+    var params = JSON.stringify(JSONObject);
+    http.open("POST", url, true);
+    http.onreadystatechange = function() { //Call a function when the state changes.
+    if(http.readyState == 4 && http.status == 200) { alert(http.responseText);}}
+    http.send(params);
+    
+}
+function postjson(mypath, content)
+{
+    var http = new XMLHttpRequest();
+    var url = "http://" + p['tvipaddr'].value + ":1925" +  mypath;
+    
+    //alert( content ); 
+   
+    http.open("POST", url, true);
+    http.onreadystatechange = function() { //Call a function when the state changes.
+      if(http.readyState == 4 && http.status == 200)
+       { //alert(http.responseText);
+       } }
+    http.send(content);
+    
+    if (TESTONLY) alert(mypath + ": "+ content);
+}
+function setambilightcolor(side, pixel, r, g, b)
+{
+    var JSONambcol = new Object;
+    JSONambcol.layer1 = new Object;
+    JSONambcol.layer1[side] = new Object;
+    JSONambcol.layer1[side][pixel] = new Object;
+    JSONambcol.layer1[side][pixel].r = parseInt( r );
+    JSONambcol.layer1[side][pixel].g = parseInt( g );
+    JSONambcol.layer1[side][pixel].b = parseInt( b );
+    
+    postjson( "/1/ambilight/cached", JSON.stringify( JSONambcol ) );
+}
+function setallambilightcolor(r, g, b)
+{
+    var JSONambcol = new Object;
+    JSONambcol.r = parseInt( r );
+    JSONambcol.g = parseInt( g );
+    JSONambcol.b = parseInt( b );
+    
+    postjson( "/1/ambilight/cached", JSON.stringify( JSONambcol ) );
+}
+function getjson(mypath)
+{
+    var http = new XMLHttpRequest();
+    var p = document.forms['settings'];
+    var url = "http://" + p['tvipaddr'].value + ":1925"+ mypath;
+    if (!TESTONLY) http.open( "GET", url, false );
+    if (!TESTONLY) http.send( null );
+    
+    //alert(mypath);
+    if(http.readyState == 4 && http.status == 200)
+    { 
+       // alert(http.responseText); 
+       document.getElementById("jsresult").innerHTML = http.responseText.replace(/\n/g, '<br/>');
+       return JSON.parse( http.responseText );
+       alert("OK");
+    }
+    alert("getjson(" +url+ ") failed!");
+    return null;
+}
+function gettheinfourl()
+{
+    var http = new XMLHttpRequest();
+    var p = document.forms['settings'];
+    var url = "http://" + p['tvipaddr'].value + ":1925"+ p['infourl'].value;
+    http.onreadystatechange = function() { 
+    if(http.readyState == 4 && http.status == 200)
+          { // alert(http.responseText); 
+            document.getElementById("jsresult").innerHTML=http.responseText.replace(/\n/g, '<br/>');
+          }  }
+    http.open( "GET", url, true );
+    http.send( null );
+}
+function saveip()
+{
+    var p = document.forms['settings'];
+    document.cookie = p['tvipaddr'].value;
+}
+</script>
+</head>
+<body>
+<h1> Test Jointspace with JSON - Ambilight </h1>
+<form name="settings" action="" method="POST">
+<table>
+<tr>
+    <td>TV IP address</td>
+    <td> <input type="text" name="tvipaddr">
+         <input type="button" name="btn_saveip" value="Save as Cookie" onclick="saveip()">
+    </td>
+</tr>
+<br>
+<br>
+<tr>
+    <td>Send Remote Key:</td>
+    <td> <input type="text" name="inputkey">
+         <input type="button" name="presskey" value="Press Key" onclick="pressthekey( document.forms['settings']['inputkey'].value )">
+    </td>
+</tr>
+<br>
+<br>
+<tr>
+    <td>URL:
+    <td> <input type="text" size=100 name="infourl">
+         <input type="button" name="getinfourl" value="Get URL" onclick="gettheinfourl()">
+    </td>
+</tr>
+<br>
+<tr>
+    <td>POST JSON content:
+    <td> <input type="text" size=180 name="postcontent">
+         <input type="button" name="postjsonobj" value="Post JSON to URL" onclick="postjson( document.forms['settings']['infourl'].value, document.forms['settings']['postcontent'].value )">
+    </td>
+</tr>
+</table>
+<br>
+<br>
+<br>
+<table>
+<tr height=100>
+   <td>Set ambilight mode</td>
+   <td>
+     <input type="radio" name="ambilightmode" value="internal" onchange='postjson( "/1/ambilight/mode", "{ \"current\": \"internal\" }" )'> internal<br>
+     <input type="radio" name="ambilightmode" value="manual"   onchange='postjson( "/1/ambilight/mode", "{ \"current\": \"manual\" }" )'> manual<br>
+     <input type="radio" name="ambilightmode" value="expert"   onchange='postjson( "/1/ambilight/mode", "{ \"current\": \"expert\" }" )'> expert<br>
+   </td>
+   <td></td>
+   <td></td>
+</tr>
+<tr>
+   <td>Change all colors</td>
+   <td></td>
+   <td id="all" align="center">
+      <input type="text" size=10" class="color {pickerPosition:'top'}" onchange="setallambilightcolor(this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )">
+   </td>
+   <td></td>
+</tr>
+<tr>
+   <td>Change individual colors</td>
+   <td></td>
+   <td><span id="ambilight_top">
+      <input type="text" size=10 name="colortop0" class="color {pickerPosition:'top'}" onchange="setambilightcolor('top',0, this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )">
+      <input type="text" size=10 name="colortop1" class="color {pickerPosition:'top'}" onchange="setambilightcolor('top',1, this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )">
+   </span></td>
+   <td></td>
+</tr>
+<tr>
+   <td width=250></td>
+   <td><span id="ambilight_left">
+      <input type="text" size=10 name="colorleft1" class="color {pickerPosition:'left'}" onchange="setambilightcolor('left',1, this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )"> <br>
+      <input type="text" size=10 name="colorleft0" class="color {pickerPosition:'left'}" onchange="setambilightcolor('left',0, this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )">
+   </span></td>
+   <td></td>
+   <td><span id="ambilight_right">
+      <input type="text" size=10 name="colorright0" class="color {pickerPosition:'right'}" onchange="setambilightcolor('right',0, this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )"> <br>
+      <input type="text" size=10 name="colorright1" class="color {pickerPosition:'right'}" onchange="setambilightcolor('right',1, this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )">
+   </span></td>
+</tr>
+<tr>
+   <td></td>
+   <td></td>
+   <td><span id="ambilight_bottom">
+      <input type="text" size=10 name="colorbottom1" class="color" onchange="setambilightcolor('bottom',1, this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )"> 
+      <input type="text" size=10 name="colorbottom0" class="color" onchange="setambilightcolor('bottom',0, this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )"> 
+   </span></td>
+   <td></td>
+</tr>
+</table>
+</form>
+<br><br>
+JointSpace GET Result:<br>
+<span id="jsresult"></span><br>
+<script type="text/javascript">
+    var p = document.forms['settings'];
+    p['tvipaddr'].value = "192.168.0.90";
+    if (document.cookie)
+       p['tvipaddr'].value = document.cookie;
+    
+    var JSON_ambilight_topology = getjson("/1/ambilight/topology");
+    if (!TESTONLY && JSON_ambilight_topology.layers != 1)
+       alert( "ERROR: Only 1 layer is supported!");
+    
+    //alert( JSON_ambilight_topology.left );
+    document.getElementById("ambilight_top").innerHTML = "";
+    for (i=0; i< JSON_ambilight_topology.top; i++)
+        document.getElementById("ambilight_top").innerHTML += '<input type="text" size=10 name="colortop'+i+'" class="color {pickerPosition:\'top\'}" onchange="setambilightcolor(\'top\','+i+', this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )"> '
+        
+    document.getElementById("ambilight_left").innerHTML = "";
+    for (i=JSON_ambilight_topology.left -1; i>=0; i--)
+        document.getElementById("ambilight_left").innerHTML += '<input type="text" size=10 name="colorleft'+i+'" class="color {pickerPosition:\'left\'}" onchange="setambilightcolor(\'left\','+i+', this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )"> <br>'
+    document.getElementById("ambilight_right").innerHTML = "";
+    for (i=0; i< JSON_ambilight_topology.right; i++)
+        document.getElementById("ambilight_right").innerHTML += '<input type="text" size=10 name="colorright'+i+'" class="color {pickerPosition:\'right\'}" onchange="setambilightcolor(\'right\','+i+', this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )">  <br>'
+    document.getElementById("ambilight_bottom").innerHTML = "";
+    for (i=JSON_ambilight_topology.bottom-1; i>=0; i--)
+        document.getElementById("ambilight_bottom").innerHTML += '<input type="text" size=10 name="colorbottom'+i+'" class="color {pickerPosition:\'bottom\'}" onchange="setambilightcolor(\'bottom\','+i+', this.color.rgb[0]*255,  this.color.rgb[1]*255, this.color.rgb[2]*255 )"> '
+    
+</script>
+</body>
+</html>

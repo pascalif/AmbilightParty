@@ -1,0 +1,232 @@
+JointSpace api : http://jointspace.sourceforge.net/projectdata/documentation/jasonApi/1/doc/API.html
+
+In browser :
+http://192.168.0.59:1925/1/examples/ambilight/ambilight.html
+
+
+Ambilight methods 
+
+Introduction to the ambilight interface
+GET ambilight/topology
+GET ambilight/mode
+POST ambilight/mode
+GET ambilight/measured
+GET ambilight/processed
+GET ambilight/cached
+POST ambilight/cached
+
+
+Audio methods
+
+GET audio/volume
+POST audio/volume
+
+
+Channel list methods
+
+GET channellists
+GET channellists/id
+
+
+Channel methods
+
+GET channels
+GET channels/current
+POST channels/current
+GET channels/id
+
+
+Input methods
+
+POST input/key
+
+
+Source methods
+
+GET sources
+GET sources/current
+POST sources/current
+
+
+System methods
+
+GET system
+GET system/country
+GET system/name
+GET system/menulanguage
+GET system/model
+GET system/serialnumber
+GET system/softwareversion
+
+===============
+
+http://ip-address-of-tv:1925/1/audio/volume
+http://ip-address-of-tv:1925/1/audio/volume?callback=mycallbackfunc
+
+================
+
+http 192.168.0.59:1925/1/audio/volume
+{
+    "current": 13, 
+    "max": 60, 
+    "min": 1, 
+    "muted": false
+}
+
+http POST 192.168.0.59:1925/1/audio/volume muted=true current=1
+http POST 192.168.0.59:1925/1/audio/volume current=20
+
+--------------------------------------
+
+http 192.168.0.59:1925/1/system
+{
+    "country": "France", 
+    "menulanguage": "French", 
+    "model": "55PFL8008K/12", 
+    "name": "Teloche", 
+    "serialnumber": "ZH1F1344008254", 
+    "softwareversion": "QF2EU-0.171.56.0"
+}
+
+--------------------------------------
+
+http 192.168.0.59:1925/1/ambilight/topology
+{
+    "bottom": 0, 
+    "layers": 1, 
+    "left": 4, 
+    "right": 4, 
+    "top": 9
+}
+
+
+http 192.168.0.59:1925/1/ambilight/mode
+{
+    "current": "internal"
+}
+
+http 192.168.0.59:1925/1/ambilight/measured
+{
+    "layer1": {
+        "bottom": {}, 
+        "left": {
+            "0": {
+                "b": 33, 
+                "g": 26, 
+                "r": 110
+            }, 
+            "1": {
+                "b": 34, 
+                "g": 27, 
+                "r": 89
+            }, 
+            "2": {
+                "b": 54, 
+                "g": 42, 
+                "r": 35
+            }, 
+            "3": {
+                "b": 62, 
+                "g": 66, 
+                "r": 78
+            }
+        }, 
+        "right": {
+            "0": {
+                "b": 75, 
+                "g": 69, 
+                "r": 78
+            }, 
+            "1": {
+                "b": 29, 
+                "g": 26, 
+                "r": 30
+            }, 
+            "2": {
+                "b": 18, 
+                "g": 16, 
+                "r": 93
+            }, 
+            "3": {
+                "b": 16, 
+                "g": 14, 
+                "r": 134
+            }
+        }, 
+        "top": {
+            "0": {
+                "b": 87, 
+                "g": 82, 
+                "r": 94
+            }, 
+            "1": {
+                "b": 83, 
+                "g": 76, 
+                "r": 87
+            }, 
+            "2": {
+                "b": 87, 
+                "g": 80, 
+                "r": 91
+            }, 
+            "3": {
+                "b": 118, 
+                "g": 109, 
+                "r": 124
+            }, 
+            "4": {
+                "b": 119, 
+                "g": 109, 
+                "r": 124
+            }, 
+            "5": {
+                "b": 118, 
+                "g": 109, 
+                "r": 124
+            }, 
+            "6": {
+                "b": 117, 
+                "g": 108, 
+                "r": 123
+            }, 
+            "7": {
+                "b": 116, 
+                "g": 107, 
+                "r": 122
+            }, 
+            "8": {
+                "b": 99, 
+                "g": 92, 
+                "r": 104
+            }
+        }
+    }
+}
+
+
+http 192.168.0.59:1925/1/ambilight/processed
+http 192.168.0.59:1925/1/ambilight/cached
+
+
+http POST 192.168.0.59:1925/1/ambilight/mode current=manual
+
+# All in white
+http POST 192.168.0.59:1925/1/ambilight/cached r:=0 g:=0 b:=0
+
+# Set by side :
+echo '
+{
+    "layer1":
+    {
+        "left":   {            "r": 100,            "g": 210,            "b": 30        },
+        "right":  {            "r": 100,            "g": 210,            "b": 30        }
+    }
+}' | http POST 192.168.0.59:1925/1/ambilight/cached 
+
+# Set a single pixel
+echo '{"layer1":{"top":{ "5": { "r": 0, "g": 0, "b": 255 }}}}}' | http POST 192.168.0.59:1925/1/ambilight/cached 
+
+echo '{"layer1":{"left":{ "O": { "r": 0, "g": 0, "b": 255 }}}}}' | http POST 192.168.0.59:1925/1/ambilight/cached 
+
+
+
